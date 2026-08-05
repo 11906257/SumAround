@@ -218,6 +218,12 @@
       transform: none;
     }
 
+    .board.solved .cell.active {
+      background: #edf7ef;
+      border-color: #8ec59c;
+      transform: none;
+    }
+
     .result {
       grid-column: 3 / 6;
       grid-row: 4;
@@ -813,7 +819,7 @@
       state.solved = false;
       state.targetStates = {};
       render();
-      checkPuzzle({ flashOnWrong: true, keepWrongState: true });
+      checkPuzzle({ flashOnWrong: true });
     }
 
     function moveToNextEmpty() {
@@ -836,7 +842,7 @@
       return lines[name].every((cell) => state.entries[cell]);
     }
 
-    function checkPuzzle({ flashOnWrong = true, keepWrongState = true } = {}) {
+    function checkPuzzle({ flashOnWrong = true } = {}) {
       let complete = true;
       let allCorrect = true;
       const targetStates = {};
@@ -852,7 +858,7 @@
         allCorrect = allCorrect && correct;
       }
 
-      state.targetStates = keepWrongState || allCorrect ? targetStates : {};
+      state.targetStates = targetStates;
       applyTargetStates(state.targetStates);
 
       if (allCorrect && complete) {
@@ -936,7 +942,7 @@
       state.solved = false;
       state.targetStates = {};
       render();
-      checkPuzzle({ flashOnWrong: false, keepWrongState: false });
+      checkPuzzle({ flashOnWrong: false });
     });
 
     newGameButton.addEventListener("click", startGame);
