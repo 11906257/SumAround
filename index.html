@@ -155,7 +155,7 @@
       position: absolute;
       top: 39px;
       right: 0;
-      width: 174px;
+      width: 286px;
       padding: 9px 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -166,10 +166,32 @@
       font-weight: 680;
       line-height: 1.25;
       text-align: left;
+      white-space: nowrap;
     }
 
     .help-text[hidden] {
       display: none;
+    }
+
+    .help-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .help-line + .help-line {
+      margin-top: 5px;
+    }
+
+    .help-line svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 15px;
+      stroke: currentColor;
+    }
+
+    .help-line strong {
+      font-weight: 830;
     }
 
     .board {
@@ -582,7 +604,27 @@
 <body>
   <div class="top-tools">
     <button class="tool" id="helpToggle" type="button" aria-label="Help">?</button>
-    <div class="help-text" id="helpText" hidden>1-9 -> use once<br>One digit stays out<br>All four totals must fit</div>
+    <div class="help-text" id="helpText" hidden>
+      <div class="help-line">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="8"></circle>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="m15 9 5-5"></path>
+          <path d="M18 4h2v2"></path>
+        </svg>
+        <span><strong>Goal:</strong> All Equations Are True</span>
+      </div>
+      <div class="help-line">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 3h12"></path>
+          <path d="M8 3v18"></path>
+          <path d="M16 3v18"></path>
+          <path d="M5 21h14"></path>
+          <path d="M8 8h8"></path>
+        </svg>
+        <span><strong>Rule:</strong> No Digit Is Used Twice</span>
+      </div>
+    </div>
   </div>
 
   <main>
