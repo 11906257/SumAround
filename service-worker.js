@@ -1,11 +1,14 @@
-const CACHE_NAME = "puzzle-pwa-v9";
+const CACHE_NAME = "puzzle-pwa-v12";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./icons/apple-touch-icon.png"
+  "./icons/apple-touch-icon.png",
+  "./icons/icon-192-dark.png",
+  "./icons/icon-512-dark.png",
+  "./icons/apple-touch-icon-dark.png"
 ];
 
 self.addEventListener("install", (event) => {
