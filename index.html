@@ -535,6 +535,14 @@
       border: 1px solid #b3d0d7;
     }
 
+    @media (prefers-color-scheme: dark) {
+      .action.clear {
+        color: #efa196;
+        background: #372522;
+        border-color: #7c433b;
+      }
+    }
+
     @media (max-width: 380px) {
       :root {
         --box: clamp(42px, 13.2vw, 52px);
@@ -574,7 +582,7 @@
 <body>
   <div class="top-tools">
     <button class="tool" id="helpToggle" type="button" aria-label="Help">?</button>
-    <div class="help-text" id="helpText" hidden>Use each digit once. Complete every equation.</div>
+    <div class="help-text" id="helpText" hidden>1-9 -> use once<br>One digit stays out<br>All four totals must fit</div>
   </div>
 
   <main>
@@ -1039,6 +1047,12 @@
     helpToggle.addEventListener("click", () => {
       helpText.hidden = !helpText.hidden;
     });
+
+    document.addEventListener("gesturestart", (event) => event.preventDefault());
+    document.addEventListener("gesturechange", (event) => event.preventDefault());
+    document.addEventListener("touchmove", (event) => {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive: false });
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
