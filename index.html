@@ -359,17 +359,17 @@
 
     .keypad {
       display: grid;
-      grid-template-columns: repeat(9, 1fr);
-      gap: 7px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
     }
 
     .num {
-      height: 48px;
+      height: 52px;
       background: #fffdf8;
       border: 1px solid var(--line);
       box-shadow: 0 6px 14px rgba(42, 35, 24, .08);
       font-weight: 760;
-      font-size: 1.1rem;
+      font-size: 1.35rem;
     }
 
     .num.used {
@@ -380,20 +380,21 @@
 
     .actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-      margin-top: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 10px;
     }
 
     .action {
-      min-height: 48px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 5px;
       background: #302d28;
       color: #fffaf0;
       font-weight: 720;
+      font-size: .9rem;
     }
 
     .action:disabled,
@@ -405,17 +406,17 @@
     }
 
     .action .icon {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       display: inline-grid;
-      flex: 0 0 18px;
+      flex: 0 0 16px;
       place-items: center;
       line-height: 1;
     }
 
     .action svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       display: block;
       stroke: currentColor;
     }
@@ -469,7 +470,13 @@
       }
 
       .num {
-        height: 43px;
+        height: 46px;
+      }
+
+      .action {
+        min-height: 42px;
+        font-size: .82rem;
+        gap: 4px;
       }
     }
   </style>
@@ -531,8 +538,18 @@
     </section>
 
     <footer>
-      <div class="keypad" id="keypad" aria-label="Digits"></div>
       <div class="actions">
+        <button class="action new" id="newGame" type="button">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 11a8.1 8.1 0 0 0-15.5-2"></path>
+              <path d="M4 5v4h4"></path>
+              <path d="M4 13a8.1 8.1 0 0 0 15.5 2"></path>
+              <path d="M20 19v-4h-4"></path>
+            </svg>
+          </span>
+          <span>New</span>
+        </button>
         <button class="action clear" id="clear" type="button">
           <span class="icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -558,26 +575,8 @@
           </span>
           <span>Hint</span>
         </button>
-        <button class="action new" id="newGame" type="button">
-          <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 11a8.1 8.1 0 0 0-15.5-2"></path>
-              <path d="M4 5v4h4"></path>
-              <path d="M4 13a8.1 8.1 0 0 0 15.5 2"></path>
-              <path d="M20 19v-4h-4"></path>
-            </svg>
-          </span>
-          <span>New</span>
-        </button>
-        <button class="action check" id="check" type="button">
-          <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 6 9 17l-5-5"></path>
-            </svg>
-          </span>
-          <span>Check</span>
-        </button>
       </div>
+      <div class="keypad" id="keypad" aria-label="Digits"></div>
     </footer>
   </main>
 
@@ -610,7 +609,6 @@
     const clearButton = document.getElementById("clear");
     const hintButton = document.getElementById("hint");
     const newGameButton = document.getElementById("newGame");
-    const checkButton = document.getElementById("check");
     const resultTime = document.getElementById("resultTime");
     const resultHints = document.getElementById("resultHints");
     const cellButtons = Object.fromEntries([...document.querySelectorAll(".cell")].map((button) => [button.dataset.cell, button]));
@@ -746,7 +744,6 @@
       document.body.classList.toggle("solved", state.solved);
       clearButton.disabled = state.solved;
       hintButton.disabled = state.solved || state.lockedCells.size === cellOrder.length;
-      checkButton.disabled = state.solved;
 
       for (const id of cellOrder) {
         const cellButton = cellButtons[id];
@@ -939,11 +936,6 @@
       state.targetStates = {};
       render();
       checkPuzzle({ flashOnWrong: false, keepWrongState: false });
-    });
-
-    checkButton.addEventListener("click", () => {
-      if (state.solved) return;
-      checkPuzzle();
     });
 
     newGameButton.addEventListener("click", startGame);
