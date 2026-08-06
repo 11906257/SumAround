@@ -27,12 +27,17 @@
       --active-soft: #dcebea;
       --good: #2f7d50;
       --good-soft: #dbeadc;
+      --good-border: #8ec59c;
+      --target-good-border: #a9cdb0;
       --bad: #b84a3a;
       --bad-soft: #f0d8d3;
+      --bad-border: #d6aca4;
       --warn: #9a6a18;
       --warn-soft: #f4e6c6;
+      --warn-border: #dec58f;
       --info: #2f6877;
       --info-soft: #d9eaed;
+      --info-border: #b3d0d7;
       --box: clamp(46px, 13.6vw, 78px);
       --op-box: clamp(18px, 5vw, 36px);
       --gap: clamp(5px, 1.8vw, 7px);
@@ -50,12 +55,17 @@
         --active-soft: #203638;
         --good: #7ed99b;
         --good-soft: #1f3928;
+        --good-border: #5eae77;
+        --target-good-border: #4c8f62;
         --bad: #ed8f82;
         --bad-soft: #402621;
+        --bad-border: #7c433b;
         --warn: #e3bf62;
         --warn-soft: #3e3218;
+        --warn-border: #7f6630;
         --info: #7ac7d8;
         --info-soft: #203842;
+        --info-border: #3c7380;
         --shadow: 0 12px 34px rgba(0, 0, 0, .2);
       }
     }
@@ -245,7 +255,7 @@
     .cell.locked {
       color: var(--good);
       background: var(--good-soft);
-      border-color: #8ec59c;
+      border-color: var(--good-border);
       box-shadow: 0 10px 24px rgba(47, 125, 80, .12);
       cursor: default;
     }
@@ -351,26 +361,26 @@
     .target.ok {
       background: var(--good-soft);
       color: var(--good);
-      border-color: #a9cdb0;
+      border-color: var(--target-good-border);
     }
 
     .target.fail {
       background: var(--bad-soft);
       color: var(--bad);
-      border-color: #d6aca4;
+      border-color: var(--bad-border);
     }
 
     .board.solved .cell {
       color: var(--good);
       background: var(--good-soft);
-      border-color: #8ec59c;
+      border-color: var(--good-border);
       box-shadow: 0 10px 24px rgba(47, 125, 80, .12);
       transform: none;
     }
 
     .board.solved .cell.active {
       background: var(--good-soft);
-      border-color: #8ec59c;
+      border-color: var(--good-border);
       transform: none;
     }
 
@@ -594,20 +604,20 @@
     .action.hint {
       color: var(--warn);
       background: var(--warn-soft);
-      border: 1px solid #dec58f;
+      border: 1px solid var(--warn-border);
     }
 
     .action.new {
       color: var(--info);
       background: var(--info-soft);
-      border: 1px solid #b3d0d7;
+      border: 1px solid var(--info-border);
     }
 
     @media (prefers-color-scheme: dark) {
       .action.clear {
         color: #efa196;
         background: #372522;
-        border-color: #7c433b;
+        border-color: var(--bad-border);
       }
     }
 
@@ -649,7 +659,7 @@
 </head>
 <body>
   <div class="top-tools">
-    <button class="tool" id="helpToggle" type="button" aria-label="Help">?</button>
+    <button class="tool" id="helpToggle" type="button" aria-label="Help" aria-controls="helpText" aria-expanded="false">?</button>
     <div class="help-text" id="helpText" hidden>
       <div class="help-line">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -793,13 +803,15 @@
       bottom: ["br", "b", "bl"],
       left: ["bl", "l", "tl"]
     };
+    const lineNames = Object.keys(lines);
     const opSymbols = ["+", "-", "*"];
+    const opLabels = { "*": "×" };
     const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     const maxTarget = 45;
     const generationAttempts = 600;
     const state = {
       puzzle: null,
-      entries: Object.fromEntries(cellOrder.map((cell) => [cell, ""])),
+      entries: createEntries(),
       activeCell: "tl",
       solved: false,
       lockedCells: new Set(),
@@ -848,14 +860,20 @@
       }, nums[0]);
     }
 
+    function createEntries() {
+      return Object.fromEntries(cellOrder.map((cell) => [cell, ""]));
+    }
+
+    function createTargets(solution, ops) {
+      return Object.fromEntries(lineNames.map((name) => [
+        name,
+        calculate(lines[name].map((cell) => solution[cell]), ops[name])
+      ]));
+    }
+
     function buildPuzzleFrom(solution) {
-      const ops = {};
-      const targets = {};
-      for (const name of Object.keys(lines)) {
-        ops[name] = [randomOp(), randomOp()];
-        targets[name] = calculate(lines[name].map((cell) => solution[cell]), ops[name]);
-      }
-      return { solution, ops, targets };
+      const ops = Object.fromEntries(lineNames.map((name) => [name, [randomOp(), randomOp()]]));
+      return { solution, ops, targets: createTargets(solution, ops) };
     }
 
     function randomOp() {
@@ -906,6 +924,17 @@
       return count;
     }
 
+    function fallbackPuzzle() {
+      const solution = { tl: 1, t: 2, tr: 3, r: 4, br: 5, b: 6, bl: 7, l: 8 };
+      const ops = {
+        top: ["+", "+"],
+        right: ["+", "-"],
+        bottom: ["*", "+"],
+        left: ["+", "*"]
+      };
+      return { solution, ops, targets: createTargets(solution, ops) };
+    }
+
     function generatePuzzle() {
       for (let attempt = 0; attempt < generationAttempts; attempt++) {
         const values = shuffle(digits).slice(0, 8);
@@ -915,25 +944,12 @@
           return puzzle;
         }
       }
-      const fallback = {
-        solution: { tl: 1, t: 2, tr: 3, r: 4, br: 5, b: 6, bl: 7, l: 8 },
-        ops: {
-          top: ["+", "+"],
-          right: ["+", "-"],
-          bottom: ["*", "+"],
-          left: ["+", "*"]
-        },
-        targets: {}
-      };
-      for (const name of Object.keys(lines)) {
-        fallback.targets[name] = calculate(lines[name].map((cell) => fallback.solution[cell]), fallback.ops[name]);
-      }
-      return fallback;
+      return fallbackPuzzle();
     }
 
     function startGame() {
       state.puzzle = generatePuzzle();
-      state.entries = Object.fromEntries(cellOrder.map((cell) => [cell, ""]));
+      state.entries = createEntries();
       state.activeCell = "tl";
       state.solved = false;
       state.lockedCells = new Set();
@@ -971,9 +987,9 @@
       resultTime.textContent = state.solved ? formatElapsed(state.solvedAt - state.startedAt) : "";
       resultHints.textContent = state.solved ? `${state.hintsUsed} ${state.hintsUsed === 1 ? "hint" : "hints"}` : "";
 
-      for (const [line, ops] of Object.entries(state.puzzle.ops)) {
-        ops.forEach((op, index) => {
-          opEls[`${line}-${index}`].textContent = op === "*" ? "×" : op;
+      for (const name of lineNames) {
+        state.puzzle.ops[name].forEach((op, index) => {
+          opEls[`${name}-${index}`].textContent = opLabels[op] || op;
         });
       }
 
@@ -1046,7 +1062,7 @@
       let allCorrect = true;
       const targetStates = {};
 
-      for (const name of Object.keys(lines)) {
+      for (const name of lineNames) {
         if (!lineFilled(name)) {
           complete = false;
           allCorrect = false;
@@ -1103,7 +1119,7 @@
 
     board.addEventListener("click", (event) => {
       const cell = event.target.closest(".cell");
-      if (!cell || state.lockedCells.has(cell.dataset.cell)) return;
+      if (!cell || state.solved || state.lockedCells.has(cell.dataset.cell)) return;
       state.activeCell = cell.dataset.cell;
       render();
     });
@@ -1148,6 +1164,7 @@
 
     helpToggle.addEventListener("click", () => {
       helpText.hidden = !helpText.hidden;
+      helpToggle.setAttribute("aria-expanded", String(!helpText.hidden));
     });
 
     document.addEventListener("gesturestart", (event) => event.preventDefault());

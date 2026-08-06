@@ -1,6 +1,6 @@
 # Sum Around
 
-Sum Around is a small arithmetic puzzle for iPhone and browser. The idea is inspired by Die Presse's "Zahlen, bitte": https://www.diepresse.com/20395598/zahlen-bitte
+Sum Around is a small arithmetic puzzle for iPhone and browser. The idea is inspired by Die Presse's "Zahlen, bitte": https://www.diepresse.com/zahlen-bitte
 
 ## Rules
 
