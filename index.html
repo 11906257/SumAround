@@ -554,7 +554,7 @@
 
     .actions {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 7px;
       margin-bottom: 10px;
     }
@@ -599,6 +599,12 @@
       color: #6f372f;
       background: #f0ded9;
       border: 1px solid #d6b3aa;
+    }
+
+    .action.delete {
+      color: color-mix(in srgb, var(--ink) 62%, var(--line));
+      background: color-mix(in srgb, var(--tile) 72%, var(--line));
+      border: 1px solid var(--line);
     }
 
     .action.hint {
@@ -651,8 +657,8 @@
 
       .action {
         min-height: 42px;
-        font-size: .82rem;
-        gap: 4px;
+        font-size: .78rem;
+        gap: 3px;
       }
     }
   </style>
@@ -683,6 +689,7 @@
         <span class="help-label">Rule:</span>
       </div>
       <div>No Digit Is Used Twice</div>
+      <div>× Before + And -</div>
     </div>
   </div>
 
@@ -790,6 +797,15 @@
           </span>
           <span>Hint</span>
         </button>
+        <button class="action delete" id="deleteCell" type="button">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 5H8l-6 7 6 7h13Z"></path>
+              <path d="M10 12h7"></path>
+            </svg>
+          </span>
+          <span>Delete</span>
+        </button>
       </div>
       <div class="keypad" id="keypad" aria-label="Digits"></div>
     </footer>
@@ -826,6 +842,7 @@
     const keypad = document.getElementById("keypad");
     const clearButton = document.getElementById("clear");
     const hintButton = document.getElementById("hint");
+    const deleteButton = document.getElementById("deleteCell");
     const newGameButton = document.getElementById("newGame");
     const helpToggle = document.getElementById("helpToggle");
     const helpText = document.getElementById("helpText");
@@ -967,6 +984,7 @@
       document.body.classList.toggle("solved", state.solved);
       clearButton.disabled = state.solved;
       hintButton.disabled = state.solved || state.lockedCells.size === cellOrder.length;
+      deleteButton.disabled = state.solved || state.lockedCells.has(state.activeCell);
 
       for (const id of cellOrder) {
         const cellButton = cellButtons[id];
@@ -1137,6 +1155,14 @@
       state.solved = false;
       state.targetStates = {};
       render();
+    });
+
+    deleteButton.addEventListener("click", () => {
+      if (state.solved || state.lockedCells.has(state.activeCell) || !state.entries[state.activeCell]) return;
+      state.entries[state.activeCell] = "";
+      state.targetStates = {};
+      render();
+      checkPuzzle({ flashOnWrong: false });
     });
 
     hintButton.addEventListener("click", () => {
