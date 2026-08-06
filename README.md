@@ -1,23 +1,20 @@
-# Puzzle PWA
+# Sum Around
 
-This folder is ready for GitHub Pages.
+Sum Around is a small arithmetic puzzle for iPhone and browser. The idea is inspired by Die Presse's "Zahlen, bitte": https://www.diepresse.com/20395598/zahlen-bitte
 
-## Publish with GitHub Pages
+## Rules
 
-1. Create a new public GitHub repository.
-2. Upload all files from this folder into the repository root.
-3. In GitHub, open `Settings` -> `Pages`.
-4. Under `Build and deployment`, choose:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/root`
-5. Open the GitHub Pages URL after GitHub finishes publishing.
+- Fill the eight empty squares with digits from 1 to 9.
+- No digit can be used twice.
+- One digit is left out.
+- Each row or column equation must match its shown total.
+- Every generated puzzle has one unique solution.
 
-## Install on iPhone
+## Install On iPhone
 
-1. Open the GitHub Pages URL in Safari.
+1. Open the Sum Around website in Safari.
 2. Tap Share.
 3. Tap `Add to Home Screen`.
-4. Open the app once from the Home Screen while online.
+4. Open Sum Around once from the Home Screen while online.
 
-After that first load, the service worker caches the app for offline use.
+After the first load, the service worker keeps the app available offline.

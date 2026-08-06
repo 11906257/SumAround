@@ -1,7 +1,7 @@
 {
-  "name": "Puzzle",
-  "short_name": "Puzzle",
-  "description": "A small number puzzle.",
+  "name": "Sum Around",
+  "short_name": "Sum Around",
+  "description": "A compact arithmetic puzzle inspired by Die Presse.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
