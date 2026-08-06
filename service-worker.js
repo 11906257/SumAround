@@ -1,4 +1,4 @@
-const CACHE_NAME = "sum-around-v30";
+const CACHE_NAME = "sum-around-v31";
 const ASSETS = [
   "./",
   "./index.html",
