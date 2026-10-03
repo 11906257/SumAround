@@ -1,4 +1,4 @@
-const CACHE_NAME = "sum-around-v31";
+const CACHE_NAME = "sum-around-v32";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,23 +19,22 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
-      keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-    ))
+      keys.filter((key) => key.startsWith("sum-around-") && key !== CACHE_NAME).map((key) => caches.delete(key))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  if (event.request.method !== "GET" || !event.request.url.startsWith(self.registration.scope)) return;
 
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match("./index.html"))
+      fetch(event.request).catch(() => caches.open(CACHE_NAME).then((cache) => cache.match("./index.html")))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.open(CACHE_NAME).then((cache) => cache.match(event.request, { ignoreSearch: true })).then((cached) => cached || fetch(event.request))
   );
 });

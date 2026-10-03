@@ -32,13 +32,19 @@
       --bad: #b84a3a;
       --bad-soft: #f0d8d3;
       --bad-border: #d6aca4;
+      --mistake-background: #f8e8e4;
       --warn: #9a6a18;
       --warn-soft: #f4e6c6;
       --warn-border: #dec58f;
       --info: #2f6877;
       --info-soft: #d9eaed;
       --info-border: #b3d0d7;
-      --box: clamp(46px, 13.6vw, 78px);
+      --digit-height: 52px;
+      --action-height: 44px;
+      --keypad-gap: 9px;
+      --controls-height: calc(var(--action-height) + 10px + var(--digit-height) * 3 + var(--keypad-gap) * 2);
+      --board-space: calc(100dvh - max(18px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)) - 38px - var(--controls-height));
+      --box: min(clamp(46px, 13.6vw, 74px), calc((var(--board-space) - var(--op-box) * 2 - var(--gap) * 6) / 5));
       --op-box: clamp(18px, 5vw, 36px);
       --gap: clamp(5px, 1.8vw, 7px);
       --shadow: 0 12px 34px rgba(42, 35, 24, .11);
@@ -60,6 +66,7 @@
         --bad: #ed8f82;
         --bad-soft: #402621;
         --bad-border: #7c433b;
+        --mistake-background: #30221f;
         --warn: #e3bf62;
         --warn-soft: #3e3218;
         --warn-border: #7f6630;
@@ -106,7 +113,7 @@
 
     main {
       width: min(100%, 520px);
-      height: 100svh;
+      height: 100dvh;
       margin: 0 auto;
       padding: max(18px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
       display: grid;
@@ -129,8 +136,6 @@
 
     .stage {
       align-self: center;
-      display: grid;
-      gap: 18px;
     }
 
     .board-wrap {
@@ -144,9 +149,6 @@
       top: max(10px, env(safe-area-inset-top));
       right: max(10px, env(safe-area-inset-right));
       z-index: 10;
-      display: inline-flex;
-      gap: 7px;
-      align-items: center;
     }
 
     .tool {
@@ -168,6 +170,7 @@
       top: 39px;
       right: 0;
       width: 306px;
+      max-width: calc(100vw - 20px);
       padding: 14px 15px;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -179,10 +182,6 @@
       line-height: 1.25;
       text-align: left;
       white-space: nowrap;
-    }
-
-    .help-text[hidden] {
-      display: none;
     }
 
     .help-line {
@@ -267,9 +266,6 @@
     .target {
       background: color-mix(in srgb, var(--line) 56%, var(--tile));
       border: 1px solid var(--line);
-      width: var(--box);
-      height: var(--box);
-      min-width: var(--box);
       padding: 0 8px;
       font-size: clamp(.94rem, 4.8vw, 1.42rem);
       gap: 4px;
@@ -325,8 +321,8 @@
       grid-row: 4;
       position: relative;
       z-index: 1;
-      --title-radius: clamp(35px, 10.8vw, 44px);
-      width: clamp(88px, 28vw, 112px);
+      --title-radius: min(clamp(35px, 10.8vw, 44px), calc(var(--box) * .83));
+      width: min(clamp(88px, 28vw, 112px), calc(var(--box) * 2.1));
       aspect-ratio: 1;
       margin: 0;
       opacity: 1;
@@ -378,12 +374,6 @@
       transform: none;
     }
 
-    .board.solved .cell.active {
-      background: var(--good-soft);
-      border-color: var(--good-border);
-      transform: none;
-    }
-
     .result {
       grid-column: 3 / 6;
       grid-row: 4;
@@ -397,8 +387,6 @@
       display: none;
       text-align: center;
       color: var(--good);
-      background: transparent;
-      border: 0;
       pointer-events: none;
       animation: result-pop .38s cubic-bezier(.2, 1.25, .35, 1) both;
     }
@@ -491,7 +479,7 @@
         background: var(--paper);
       }
       35% {
-        background: #f8e8e4;
+        background: var(--mistake-background);
       }
     }
 
@@ -534,11 +522,11 @@
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 9px;
+      gap: var(--keypad-gap);
     }
 
     .num {
-      height: 52px;
+      height: var(--digit-height);
       background: var(--tile);
       border: 1px solid var(--line);
       box-shadow: 0 6px 14px rgba(42, 35, 24, .08);
@@ -560,13 +548,11 @@
     }
 
     .action {
-      min-height: 44px;
+      min-height: var(--action-height);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 5px;
-      background: #302d28;
-      color: #fffaf0;
       font-weight: 720;
       font-size: .9rem;
     }
@@ -582,10 +568,7 @@
     .action .icon {
       width: 16px;
       height: 16px;
-      display: inline-grid;
       flex: 0 0 16px;
-      place-items: center;
-      line-height: 1;
     }
 
     .action svg {
@@ -629,7 +612,10 @@
 
     @media (max-width: 380px) {
       :root {
-        --box: clamp(42px, 13.2vw, 52px);
+        --digit-height: 46px;
+        --action-height: 42px;
+        --keypad-gap: 5px;
+        --box: min(clamp(42px, 13.2vw, 52px), calc((var(--board-space) - var(--op-box) * 2 - var(--gap) * 6) / 5));
         --op-box: clamp(16px, 4.8vw, 18px);
         --gap: 5px;
       }
@@ -639,26 +625,37 @@
         padding-right: 12px;
       }
 
-      .board {
-        gap: 5px;
-      }
-
       .target {
         padding: 0 6px;
       }
 
-      .keypad {
-        gap: 5px;
-      }
-
-      .num {
-        height: 46px;
-      }
-
       .action {
-        min-height: 42px;
         font-size: .78rem;
         gap: 3px;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      :root {
+        --board-space: min(calc(100dvh - max(18px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)) - 20px), calc((100vw - 54px) / 2));
+      }
+
+      main {
+        width: min(100%, 900px);
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+      }
+
+      footer {
+        align-self: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: .01ms !important;
       }
     }
   </style>
@@ -823,7 +820,7 @@
     const opSymbols = ["+", "-", "*"];
     const opLabels = { "*": "×" };
     const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const maxTarget = 36;
+    const maxTarget = 45;
     const generationAttempts = 600;
     const state = {
       puzzle: null,
@@ -834,8 +831,7 @@
       hintedCell: "",
       hintsUsed: 0,
       startedAt: 0,
-      solvedAt: 0,
-      targetStates: {}
+      solvedAt: 0
     };
 
     const board = document.getElementById("board");
@@ -852,6 +848,7 @@
     const targetEls = Object.fromEntries([...document.querySelectorAll(".target")].map((target) => [target.dataset.target, target]));
     const opEls = Object.fromEntries([...document.querySelectorAll(".op")].map((op) => [op.dataset.op, op]));
     const digitButtons = [];
+    let mistakeTimeout;
 
     function shuffle(items) {
       const result = [...items];
@@ -863,18 +860,18 @@
     }
 
     function calculate(values, ops) {
-      const nums = [...values];
-      const signs = [...ops];
-      for (let i = 0; i < signs.length; i++) {
-        if (signs[i] === "*") {
-          nums.splice(i, 2, nums[i] * nums[i + 1]);
-          signs.splice(i, 1);
-          i--;
+      // Accumulate multiplication terms before adding or subtracting them.
+      let total = 0;
+      let term = values[0];
+      for (let i = 0; i < ops.length; i++) {
+        if (ops[i] === "*") {
+          term *= values[i + 1];
+        } else {
+          total += term;
+          term = ops[i] === "+" ? values[i + 1] : -values[i + 1];
         }
       }
-      return signs.reduce((total, op, index) => {
-        return op === "+" ? total + nums[index + 1] : total - nums[index + 1];
-      }, nums[0]);
+      return total + term;
     }
 
     function createEntries() {
@@ -901,23 +898,8 @@
       let count = 0;
       const assigned = {};
       const used = new Set();
-
-      function lineReady(name) {
-        return lines[name].every((cell) => assigned[cell] !== undefined);
-      }
-
-      function lineValid(name) {
-        const values = lines[name].map((cell) => assigned[cell]);
-        return calculate(values, puzzle.ops[name]) === puzzle.targets[name];
-      }
-
-      function impossibleAfter(cell) {
-        if (cell === "tr" && lineReady("top") && !lineValid("top")) return true;
-        if (cell === "br" && lineReady("right") && !lineValid("right")) return true;
-        if (cell === "bl" && lineReady("bottom") && !lineValid("bottom")) return true;
-        if (cell === "l" && lineReady("left") && !lineValid("left")) return true;
-        return false;
-      }
+      // Clockwise assignment completes the top, right, bottom, then left side.
+      const completedLines = { tr: "top", br: "right", bl: "bottom", l: "left" };
 
       function search(index) {
         if (count >= stopAt) return;
@@ -927,13 +909,17 @@
         }
 
         const cell = cellOrder[index];
+        const completedLine = completedLines[cell];
         for (const digit of digits) {
           if (used.has(digit)) continue;
           assigned[cell] = digit;
           used.add(digit);
-          if (!impossibleAfter(cell)) search(index + 1);
+          if (!completedLine || calculate(lines[completedLine].map((id) => assigned[id]), puzzle.ops[completedLine]) === puzzle.targets[completedLine]) {
+            search(index + 1);
+          }
           used.delete(digit);
           delete assigned[cell];
+          if (count >= stopAt) break;
         }
       }
 
@@ -954,7 +940,7 @@
 
     function generatePuzzle() {
       for (let attempt = 0; attempt < generationAttempts; attempt++) {
-        const values = shuffle(digits).slice(0, 8);
+        const values = shuffle(digits);
         const solution = Object.fromEntries(cellOrder.map((cell, index) => [cell, values[index]]));
         const puzzle = buildPuzzleFrom(solution);
         if (Object.values(puzzle.targets).every((target) => target >= 0 && target <= maxTarget) && countSolutions(puzzle) === 1) {
@@ -965,15 +951,16 @@
     }
 
     function startGame() {
+      clearTimeout(mistakeTimeout);
+      board.classList.remove("mistake");
       state.puzzle = generatePuzzle();
       state.entries = createEntries();
       state.activeCell = "tl";
       state.solved = false;
-      state.lockedCells = new Set();
+      state.lockedCells.clear();
       state.hintedCell = "";
       state.hintsUsed = 0;
       state.solvedAt = 0;
-      state.targetStates = {};
       state.startedAt = performance.now();
       document.body.classList.remove("solved", "mistake");
       render();
@@ -998,8 +985,10 @@
       for (const [name, target] of Object.entries(state.puzzle.targets)) {
         const targetEl = targetEls[name];
         targetEl.textContent = target;
-        targetEl.classList.remove("ok", "fail");
-        if (state.targetStates[name]) targetEl.classList.add(state.targetStates[name]);
+        const filled = lineFilled(name);
+        const correct = filled && getLineValue(name) === target;
+        targetEl.classList.toggle("ok", correct);
+        targetEl.classList.toggle("fail", filled && !correct);
       }
 
       resultTime.textContent = state.solved ? formatElapsed(state.solvedAt - state.startedAt) : "";
@@ -1015,7 +1004,6 @@
     }
 
     function buildKeypad() {
-      keypad.innerHTML = "";
       for (const digit of digits) {
         const button = document.createElement("button");
         button.className = "num";
@@ -1049,10 +1037,7 @@
         moveToNextEmpty();
       }
 
-      state.solved = false;
-      state.targetStates = {};
-      render();
-      checkPuzzle({ flashOnWrong: true });
+      checkPuzzle(true);
     }
 
     function moveToNextEmpty() {
@@ -1075,57 +1060,31 @@
       return lines[name].every((cell) => state.entries[cell]);
     }
 
-    function checkPuzzle({ flashOnWrong = true } = {}) {
-      let complete = true;
-      let allCorrect = true;
-      const targetStates = {};
-
-      for (const name of lineNames) {
-        if (!lineFilled(name)) {
-          complete = false;
-          allCorrect = false;
-          continue;
-        }
-        const correct = getLineValue(name) === state.puzzle.targets[name];
-        targetStates[name] = correct ? "ok" : "fail";
-        allCorrect = allCorrect && correct;
-      }
-
-      state.targetStates = targetStates;
-      applyTargetStates(state.targetStates);
-
-      if (allCorrect && complete) {
+    function checkPuzzle(flashOnWrong = false) {
+      const complete = cellOrder.every((cell) => state.entries[cell]);
+      if (complete && lineNames.every((name) => getLineValue(name) === state.puzzle.targets[name])) {
+        clearTimeout(mistakeTimeout);
+        board.classList.remove("mistake");
+        document.body.classList.remove("mistake");
         state.solvedAt = performance.now();
         state.solved = true;
-        render();
-        return true;
-      }
-
-      if (complete && flashOnWrong) {
+      } else if (complete && flashOnWrong) {
         flashMistake();
       }
-      return false;
+      render();
     }
 
     function flashMistake() {
+      clearTimeout(mistakeTimeout);
       board.classList.remove("mistake");
       document.body.classList.remove("mistake");
       void board.offsetWidth;
       board.classList.add("mistake");
       document.body.classList.add("mistake");
-      window.setTimeout(() => {
+      mistakeTimeout = window.setTimeout(() => {
         board.classList.remove("mistake");
         document.body.classList.remove("mistake");
       }, 430);
-    }
-
-    function applyTargetStates(targetStates) {
-      for (const targetEl of Object.values(targetEls)) {
-        targetEl.classList.remove("ok", "fail");
-      }
-      for (const [name, status] of Object.entries(targetStates)) {
-        targetEls[name].classList.add(status);
-      }
     }
 
     function formatElapsed(milliseconds) {
@@ -1144,25 +1103,19 @@
 
     clearButton.addEventListener("click", () => {
       if (state.solved) return;
-      const currentActiveCell = state.activeCell;
-      state.entries = Object.fromEntries(cellOrder.map((cell) => [
-        cell,
-        state.lockedCells.has(cell) ? String(state.puzzle.solution[cell]) : ""
-      ]));
-      state.activeCell = state.lockedCells.has(currentActiveCell)
-        ? cellOrder.find((cell) => !state.lockedCells.has(cell) && !state.entries[cell]) || "tl"
-        : currentActiveCell;
-      state.solved = false;
-      state.targetStates = {};
+      for (const cell of cellOrder) {
+        if (!state.lockedCells.has(cell)) state.entries[cell] = "";
+      }
+      state.activeCell = state.lockedCells.has(state.activeCell)
+        ? cellOrder.find((cell) => !state.lockedCells.has(cell)) || "tl"
+        : state.activeCell;
       render();
     });
 
     deleteButton.addEventListener("click", () => {
       if (state.solved || state.lockedCells.has(state.activeCell) || !state.entries[state.activeCell]) return;
       state.entries[state.activeCell] = "";
-      state.targetStates = {};
       render();
-      checkPuzzle({ flashOnWrong: false });
     });
 
     hintButton.addEventListener("click", () => {
@@ -1179,11 +1132,9 @@
       state.lockedCells.add(cell);
       state.hintedCell = cell;
       state.hintsUsed++;
-      state.activeCell = cellOrder.find((other) => !state.lockedCells.has(other) && !state.entries[other]) || cell;
-      state.solved = false;
-      state.targetStates = {};
-      render();
-      checkPuzzle({ flashOnWrong: false });
+      state.activeCell = cellOrder.find((other) => !state.lockedCells.has(other) && !state.entries[other])
+        || cellOrder.find((other) => !state.lockedCells.has(other)) || cell;
+      checkPuzzle();
     });
 
     newGameButton.addEventListener("click", startGame);
@@ -1193,15 +1144,15 @@
       helpToggle.setAttribute("aria-expanded", String(!helpText.hidden));
     });
 
-    document.addEventListener("gesturestart", (event) => event.preventDefault());
-    document.addEventListener("gesturechange", (event) => event.preventDefault());
+    document.addEventListener("gesturestart", (event) => event.preventDefault(), { passive: false });
+    document.addEventListener("gesturechange", (event) => event.preventDefault(), { passive: false });
     document.addEventListener("touchmove", (event) => {
       if (event.touches.length > 1) event.preventDefault();
     }, { passive: false });
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js");
+        navigator.serviceWorker.register("./service-worker.js").catch(console.error);
       });
     }
 

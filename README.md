@@ -8,6 +8,7 @@ Sum Around is a small arithmetic puzzle for iPhone and browser. The idea is insp
 - No digit can be used twice.
 - One digit is left out.
 - Each row or column equation must match its shown total.
+- Multiplication is evaluated before addition and subtraction.
 - Every generated puzzle has one unique solution.
 
 ## Install On iPhone
